@@ -6,7 +6,7 @@ import cv2
 import mediapipe as mp
 
 from classifier import Classifier
-
+print(mp.__file__)
 
 def load_labels(path):
     with open(path, 'r') as f:
@@ -64,7 +64,6 @@ if __name__ == '__main__':
                 landmark_list = calc_landmark_list(frame, landmark)
                 hand_sign_id = classifier(landmark_list)
                 print(labels[hand_sign_id])
-                #Display text with detected text on the screen of camera
                 cv2.putText(frame, labels[hand_sign_id], (10, 30),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2,
                             cv2.LINE_AA)

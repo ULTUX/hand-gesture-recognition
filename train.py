@@ -8,7 +8,7 @@ dataset_path = "model/train_data.csv"
 model_export = "model/model.hdf5"
 tflite_export = "model/model.tflite"
 
-class_size = 3
+class_size = 4
 
 dataset = np.loadtxt(dataset_path, delimiter=',', dtype='float32',
                      usecols=list(range(1, 21 * 2 + 1)))
