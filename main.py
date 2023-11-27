@@ -6,7 +6,7 @@ import cv2
 import mediapipe as mp
 
 from classifier import Classifier
-print(mp.__file__)
+
 
 def load_labels(path):
     with open(path, 'r') as f:
@@ -62,12 +62,18 @@ if __name__ == '__main__':
         if result.multi_hand_landmarks:
             for landmark in result.multi_hand_landmarks:
                 landmark_list = calc_landmark_list(frame, landmark)
-                hand_sign_id = classifier(landmark_list)
-                print(labels[hand_sign_id])
-                cv2.putText(frame, labels[hand_sign_id], (10, 30),
+                classification_result = classifier(landmark_list)
+                mpDraw.draw_landmarks(frame, landmark, mpHands.HAND_CONNECTIONS)
+                if classification_result is None:
+                    continue
+                confidence, hand_sign_id = classification_result
+                print(
+                    f"Gesture detection result: {labels[hand_sign_id]} ({confidence})")
+                cv2.putText(frame,
+                            f"{labels[hand_sign_id]} ({round(confidence * 100, 2)}%)",
+                            (10, 30),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2,
                             cv2.LINE_AA)
-                mpDraw.draw_landmarks(frame, landmark, mpHands.HAND_CONNECTIONS)
 
         cv2.imshow("Output", frame)
         if cv2.waitKey(10) & 0xFF == ord('q'):

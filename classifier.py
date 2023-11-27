@@ -3,7 +3,8 @@ import tensorflow as tf
 
 
 class Classifier(object):
-    def __init__(self):
+    def __init__(self, threshold=0.7):
+        self.threshold = threshold
         self.interpreter = tf.lite.Interpreter(model_path='model/model.tflite',
                                                num_threads=1)
 
@@ -22,5 +23,8 @@ class Classifier(object):
         result = self.interpreter.get_tensor(output_details_tensor_index)
 
         result_index = np.argmax(np.squeeze(result))
+        confidence = np.squeeze(result)[result_index]
+        if confidence < self.threshold:
+            return None
 
-        return result_index
+        return confidence, result_index
