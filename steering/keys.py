@@ -4,6 +4,7 @@ import time
 from pynput.keyboard import Controller, Key
 
 import config
+import tray
 
 keyMap = {
     "A": "a",
@@ -83,17 +84,26 @@ ignore_events = False
 
 def set_ignore_events_to_false_after_delay():
     time.sleep(config.hold_time / 1000.0)
+    set_ignore_events(False)
+
+
+def set_ignore_events(value: bool):
     global ignore_events
-    ignore_events = False
+    ignore_events = value
+    if ignore_events:
+        tray.tray_icon.icon = tray.red_circle
+    else:
+        tray.tray_icon.icon = tray.green_circle
 
 
 def press_keys(keys: str):
     global ignore_events
     if ignore_events:
         print("gesture ignored")
+        # todo: delete this print (for debug only)
         return
 
-    ignore_events = True
+    set_ignore_events(True)
     threading.Thread(target=set_ignore_events_to_false_after_delay).start()
 
     keyboard = Controller()
@@ -106,13 +116,13 @@ def press_keys(keys: str):
 
 def release_keys_from_list(keyboard, keys_list):
     for key in reversed(keys_list):
-        print(f'releasing {key} : {keyMap[key]}')
+        print(f'releasing {key}')
         # todo: delete print (for debugging only)
         keyboard.release(keyMap[key])
 
 
 def press_keys_from_list(keyboard, keys_list):
     for key in keys_list:
-        print(f'pressing {key} : {keyMap[key]}')
+        print(f'pressing {key}')
         # todo: delete print (for debugging only)
         keyboard.press(keyMap[key])

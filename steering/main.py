@@ -7,7 +7,7 @@ from waitress import create_server
 
 import config
 from keys import press_keys
-from tray import tray_icon_thread, icon
+from tray import tray_icon_thread, tray_icon
 
 app = Flask("__name__")
 
@@ -27,7 +27,7 @@ def display_config_notification():
     config_string = ('Wczytana konfiguracja gestów: \n' +
                      '\n'.join([f'{a} : {config.gesture_dict[a]}' for a in config.gesture_dict]) +
                      f'\nCzas wstrzymania: {config.hold_time} ms.')
-    icon.notify(config_string, "Gestownik")
+    tray_icon.notify(config_string, "Gestownik")
 
 
 if __name__ == '__main__':
@@ -41,5 +41,5 @@ if __name__ == '__main__':
 
     tray_icon_thread.join()
     rest_server.close()
-    server_thread.join(timeout=5)
+    server_thread.join(timeout=10)
     print("exited")
