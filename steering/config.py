@@ -1,5 +1,4 @@
 import configparser
-from tray import tray_icon
 
 gesture_dict = {}
 hold_time = 1000

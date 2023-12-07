@@ -12,7 +12,7 @@ from tray import tray_icon_thread, tray_icon
 app = Flask("__name__")
 
 
-@app.route('/gesture/<gesture>', methods=['GET','POST'])
+@app.route('/gesture/<gesture>', methods=['GET', 'POST'])
 def on_gesture(gesture=None):
     if gesture in config.gesture_dict:
         press_keys(config.gesture_dict[gesture])
@@ -24,9 +24,10 @@ server_thread = threading.Thread(name="restApiThread", target=lambda: rest_serve
 
 
 def display_config_notification():
-    config_string = ('Wczytana konfiguracja gestów: \n' +
-                     '\n'.join([f'{a} : {config.gesture_dict[a]}' for a in config.gesture_dict]) +
-                     f'\nCzas wstrzymania: {config.hold_time} ms.')
+    # config_string = ('Wczytana konfiguracja gestów: \n' +
+    #                  '\n'.join([f'{a} : {config.gesture_dict[a]}' for a in config.gesture_dict]) +
+    #                  f'\nCzas wstrzymania: {config.hold_time} ms.')
+    config_string = "Uruchomiono rozpoznawanie gestów."
     tray_icon.notify(config_string, "Gestownik")
 
 
@@ -41,5 +42,6 @@ if __name__ == '__main__':
 
     tray_icon_thread.join()
     rest_server.close()
-    server_thread.join(timeout=10)
+    server_thread.join(timeout=2)
     print("exited")
+    exit(0)
