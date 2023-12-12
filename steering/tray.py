@@ -1,24 +1,12 @@
 import threading
-import pystray
-from PIL import Image, ImageDraw
 
-import keys
+import pystray
+
+import steering.keys as keys
+from steering.icon import green_circle
 
 WZNOW_WYKRYWANIE_GESTOW = "Wznów wykrywanie gestów"
 ZATRZYMAJ_WYKRYWANIE_GESTOW = "Zatrzymaj wykrywanie gestów"
-
-
-def create_circle(width, height, background_color, circle_color):
-    image = Image.new('RGBA', (width, height), background_color)
-
-    dc = ImageDraw.Draw(image)
-
-    dc.ellipse(
-        [(6, 6), (width - 6, height - 6)],
-        fill=circle_color,
-        outline=(0, 0, 0, 0))
-
-    return image
 
 
 def start_stop_gesture_recognition():
@@ -30,9 +18,6 @@ def start_stop_gesture_recognition():
     else:
         start_stop_menu_item_text = ZATRZYMAJ_WYKRYWANIE_GESTOW
 
-
-green_circle = create_circle(32, 32, (255, 255, 255, 0), (0, 255, 0, 255))
-red_circle = create_circle(32, 32, (0, 0, 0, 0), (255, 0, 0, 255))
 
 start_stop_menu_item_text = ZATRZYMAJ_WYKRYWANIE_GESTOW
 start_stop_menu_item = pystray.MenuItem(lambda text: start_stop_menu_item_text,
@@ -47,3 +32,7 @@ tray_icon = pystray.Icon('Gestownik',
                          ))
 
 tray_icon_thread = threading.Thread(target=lambda: tray_icon.run(), name="trayIconThread")
+
+
+def display_config_notification():
+    tray_icon.notify("Uruchomiono rozpoznawanie gestów.", "Gestownik")

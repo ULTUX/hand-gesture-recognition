@@ -3,8 +3,9 @@ import time
 
 from pynput.keyboard import Controller, Key
 
-import config
-import tray
+from steering import config
+from steering import icon
+from steering import tray
 
 keyMap = {
     "A": "a",
@@ -91,9 +92,9 @@ def set_ignore_events(value: bool):
     global ignore_events
     ignore_events = value
     if ignore_events:
-        tray.tray_icon.icon = tray.red_circle
+        tray.tray_icon.icon = icon.red_circle
     else:
-        tray.tray_icon.icon = tray.green_circle
+        tray.tray_icon.icon = icon.green_circle
 
 
 def press_keys(keys: str):
