@@ -23,5 +23,3 @@ if __name__ == '__main__':
     tray_icon_thread.join()
     recognition.run_recognition_thread = False
     recognition_thread.join()
-    print("exited")
-    exit(0)
