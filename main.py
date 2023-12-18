@@ -57,7 +57,9 @@ if __name__ == '__main__':
 
     while cap.isOpened():
         ret, frame = cap.read()
-        result = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        frame = cv2.flip(frame, 1)
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        result = hands.process(frame)
         classifier = Classifier()
         if result.multi_hand_landmarks:
             for landmark in result.multi_hand_landmarks:
