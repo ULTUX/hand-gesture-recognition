@@ -91,10 +91,13 @@ def set_ignore_events_to_false_after_delay():
 def set_ignore_events(value: bool):
     global ignore_events
     ignore_events = value
-    if ignore_events:
-        tray.tray_icon.icon = icon.red_circle
-    else:
-        tray.tray_icon.icon = icon.green_circle
+    try:
+        if ignore_events:
+            tray.tray_icon.icon = icon.red_circle
+        else:
+            tray.tray_icon.icon = icon.green_circle
+    except:
+        print("Ignoring exception")
 
 
 def press_keys(keys: str):
