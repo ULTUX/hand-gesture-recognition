@@ -1,5 +1,6 @@
 import threading
 import time
+import traceback
 
 from pynput.keyboard import Controller, Key
 
@@ -97,6 +98,7 @@ def set_ignore_events(value: bool):
         else:
             tray.tray_icon.icon = icon.green_circle
     except:
+        traceback.print_exc()
         print("Ignoring exception")
 
 

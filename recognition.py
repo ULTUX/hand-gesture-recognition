@@ -66,6 +66,7 @@ def recognition_thread_run():
         if not cap.isOpened():
             print("============================ REOPENING CAMERA =================================")
             cap.release()
+            time.sleep(0.5)
             cap = cv2.VideoCapture(0)
 
         ret, frame = cap.read()
