@@ -24,7 +24,7 @@ start_stop_menu_item = pystray.MenuItem(lambda text: start_stop_menu_item_text,
                                         lambda: start_stop_gesture_recognition())
 close_app_menu_item = pystray.MenuItem("Zamknij", lambda: tray_icon.stop())
 
-tray_icon = pystray.Icon('Gestownik',
+tray_icon = pystray.Icon(name='Gestownik',
                          icon=green_circle,
                          menu=pystray.Menu(
                              start_stop_menu_item,

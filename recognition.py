@@ -61,10 +61,11 @@ def recognition_thread_run():
 
     while run_recognition_thread and cap.isOpened():
         ret, frame = cap.read()
-        frame = cv2.flip(frame, 1)
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         if not ret:
             continue
+
+        frame = cv2.flip(frame, 1)
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         result = hands.process(frame)
         if result.multi_hand_landmarks:
             for landmark in result.multi_hand_landmarks:
