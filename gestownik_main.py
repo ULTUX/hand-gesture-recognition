@@ -21,5 +21,7 @@ if __name__ == '__main__':
         display_config_notification()
 
     tray_icon_thread.join()
+    print("Tray icon thread exited")
     recognition.run_recognition_thread = False
     recognition_thread.join()
+    print("Recognition thread exited")

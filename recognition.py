@@ -1,6 +1,7 @@
 import copy
 import csv
 import itertools
+import time
 
 import cv2
 import mediapipe as mp
@@ -59,27 +60,37 @@ def recognition_thread_run():
 
     cap = cv2.VideoCapture(0)
 
-    while run_recognition_thread and cap.isOpened():
+    while run_recognition_thread:
+        time.sleep(0.2)
+
+        if not cap.isOpened():
+            print("============================ REOPENING CAMERA =================================")
+            cap.release()
+            time.sleep(0.5)
+            cap = cv2.VideoCapture(0)
+
         ret, frame = cap.read()
+
         if not ret:
             continue
 
         frame = cv2.flip(frame, 1)
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         result = hands.process(frame)
-        if result.multi_hand_landmarks:
-            for landmark in result.multi_hand_landmarks:
-                landmark_list = calc_landmark_list(frame, landmark)
-                classification_result = classifier(landmark_list)
-                if classification_result is None:
-                    continue
-                confidence, hand_sign_id = classification_result
-                fire_press_keys(hand_sign_id)
-                print(f"Gesture detection result: {hand_sign_id}. {labels[hand_sign_id]} ({confidence})")
 
-        if cv2.waitKey(10) & 0xFF == ord('q'):
-            break
+        if not result.multi_hand_landmarks:
+            continue
 
+        for landmark in result.multi_hand_landmarks:
+            landmark_list = calc_landmark_list(frame, landmark)
+            classification_result = classifier(landmark_list)
+            if classification_result is None:
+                continue
+            confidence, hand_sign_id = classification_result
+            fire_press_keys(hand_sign_id)
+            print(f"Gesture detection result: {hand_sign_id}. {labels[hand_sign_id]} ({confidence})")
+
+    print("finished recognition thread")
     cap.release()
     cv2.destroyAllWindows()
 

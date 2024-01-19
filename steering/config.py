@@ -12,7 +12,8 @@ def read_config():
     with open('ustawienia.cfg', 'rt') as configfile:
         cfg.read_file(configfile)
 
-    for i in range(1, 6):
-        gesture_dict[str(i)] = cfg['Gesty'].get(str(i))
+    for gesture_label in cfg['Gesty']:
+        gesture_label_str = str(gesture_label)
+        gesture_dict[gesture_label_str] = cfg['Gesty'].get(gesture_label_str)
 
     hold_time = cfg['Opcje'].getint('czas_wstrzymania_ms')
