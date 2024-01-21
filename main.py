@@ -1,7 +1,6 @@
 import copy
 import csv
 import itertools
-import threading
 import time
 
 import cv2
@@ -10,6 +9,20 @@ import mediapipe as mp
 from classifier import Classifier
 
 classifier = Classifier()
+
+meaningful_points = [2, 3, 4, 5, 6, 7, 8]
+
+
+def logCsv(mode, landmark_list):
+    if mode == 0:
+        pass
+    if mode == 1:
+        print("LAKSJDLAJSD")
+        csv_path = 'model/keypoint_ours.csv'
+        with open(csv_path, 'a', newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(landmark_list)
+    return
 
 
 def load_labels(path):
@@ -46,27 +59,10 @@ def calc_landmark_list(image, landmarks):
         return n / max_value
 
     temp_landmark_list = list(map(normalize_, temp_landmark_list))
+    temp_landmark_list = [temp_landmark_list[i] for i in meaningful_points]
+    print(temp_landmark_list)
 
     return temp_landmark_list
-
-
-def process_frame(frame, land_mark):
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    result = hands.process(frame)
-    if result.multi_hand_landmarks:
-        for landmark in result.multi_hand_landmarks:
-            landmark_list = calc_landmark_list(frame, landmark)
-            classification_result = classifier(landmark_list)
-            hands_poss = landmark
-            if classification_result is None:
-                continue
-            land_mark['label'] = labels[classification_result[1]]
-            land_mark['confidence'] = classification_result[0]
-            land_mark['landmarks'] = landmark
-            confidence, hand_sign_id = classification_result
-            print(
-                f"Gesture detection result: {labels[hand_sign_id]} ({confidence})")
-    return frame
 
 
 if __name__ == '__main__':
@@ -88,22 +84,27 @@ if __name__ == '__main__':
         time_elapsed = time.time() - prev
         ret, frame = cap.read()
         frame = cv2.flip(frame, 1)
-        if time_elapsed > 1. / frame_rate:
-            prev = time.time()
-            threading.Thread(target=process_frame,
-                             args=(frame, landmarks)).start()
-        if landmarks['landmarks'] is not None:
-            mpDraw.draw_landmarks(frame, landmarks['landmarks'],
-                                  mpHands.HAND_CONNECTIONS)
-        if landmarks['label'] is not None and landmarks['confidence'] != 0:
-            cv2.putText(frame,
-                        f"{landmarks['label']} ({round(landmarks['confidence'] * 100, 2)}%)",
-                        (10, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2,
-                        cv2.LINE_AA)
-        cv2.flip(frame, 1)
-        cv2.imshow('Output', frame)
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        result = hands.process(frame)
+        classifier = Classifier()
+        if result.multi_hand_landmarks:
+            for landmark in result.multi_hand_landmarks:
+                mode = 1 if cv2.waitKey(10) & 0xFF == ord('k') else 0
+                landmark_list = calc_landmark_list(frame, landmark)
+                classification_result = classifier(landmark_list)
+                mpDraw.draw_landmarks(frame, landmark, mpHands.HAND_CONNECTIONS)
+                if classification_result is None:
+                    continue
+                confidence, hand_sign_id = classification_result
+                print(
+                    f"Gesture detection result: {labels[hand_sign_id]} ({confidence})")
+                cv2.putText(frame,
+                            f"{labels[hand_sign_id]} ({round(confidence * 100, 2)}%)",
+                            (10, 30),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2,
+                            cv2.LINE_AA)
 
+        cv2.imshow("Output", frame)
         if cv2.waitKey(10) & 0xFF == ord('q'):
             break
 
