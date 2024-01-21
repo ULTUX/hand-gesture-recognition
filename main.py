@@ -10,14 +10,20 @@ from classifier import Classifier
 
 classifier = Classifier()
 
-meaningful_points = [2, 3, 4, 5, 6, 7, 8]
+# meaningful_points = [2, 3, 4, 5, 6, 7, 8]
+meaningful_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                     17, 18, 19, 20]
+new_list = []
+for i in meaningful_points:
+    new_list.append(i*2)
+    new_list.append(i*2+1)
+meaningful_points = new_list
 
 
 def logCsv(mode, landmark_list):
     if mode == 0:
         pass
     if mode == 1:
-        print("LAKSJDLAJSD")
         csv_path = 'model/keypoint_ours.csv'
         with open(csv_path, 'a', newline="") as f:
             writer = csv.writer(f)
@@ -60,7 +66,6 @@ def calc_landmark_list(image, landmarks):
 
     temp_landmark_list = list(map(normalize_, temp_landmark_list))
     temp_landmark_list = [temp_landmark_list[i] for i in meaningful_points]
-    print(temp_landmark_list)
 
     return temp_landmark_list
 
@@ -93,6 +98,7 @@ if __name__ == '__main__':
                 landmark_list = calc_landmark_list(frame, landmark)
                 classification_result = classifier(landmark_list)
                 mpDraw.draw_landmarks(frame, landmark, mpHands.HAND_CONNECTIONS)
+                logCsv(mode, landmark_list)
                 if classification_result is None:
                     continue
                 confidence, hand_sign_id = classification_result
