@@ -6,6 +6,10 @@ import tensorflow as tf
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.model_selection import train_test_split
 
+# meaningful_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+#                      17, 18, 19, 20]
+meaningful_points = [2, 3, 4, 5, 6, 7, 8]
+
 
 def print_confusion_matrix(y_true, y_pred, report=True):
     labels = sorted(list(set(y_true)))
@@ -34,7 +38,9 @@ tflite_export = "model/model.tflite"
 class_size = 5
 
 XDataset = np.loadtxt(dataset_path, delimiter=',', dtype='float32',
-                     usecols=list(range(1, (21 * 2) + 1)))
+                      usecols=list(range(1, (21 * 2) + 1)))
+
+XDataset = XDataset[:, meaningful_points]
 
 YDataset = np.loadtxt(dataset_path, delimiter=',', dtype='float32',
                       usecols=(0))
@@ -45,7 +51,7 @@ X_train, X_test, y_train, y_test = train_test_split(XDataset, YDataset,
 
 layers = tf.keras.layers
 model = tf.keras.models.Sequential([
-    layers.Input((21 * 2)),
+    layers.Input((len(meaningful_points))),
     layers.Dropout(0.2),
     layers.Dense(10, activation='relu'),
     layers.Dropout(0.3),
@@ -60,7 +66,8 @@ early_stop = tf.keras.callbacks.EarlyStopping(patience=20, verbose=1)
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
-model.fit(X_train, y_train, epochs=1000, batch_size=128, validation_data=(X_test, y_test),
+model.fit(X_train, y_train, epochs=1000, batch_size=128,
+          validation_data=(X_test, y_test),
           callbacks=[save_listener, early_stop])
 
 val_loss, val_acc = model.evaluate(X_test, y_test, batch_size=128)

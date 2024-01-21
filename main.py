@@ -1,11 +1,28 @@
 import copy
 import csv
 import itertools
+import time
 
 import cv2
 import mediapipe as mp
 
 from classifier import Classifier
+
+classifier = Classifier()
+
+meaningful_points = [2, 3, 4, 5, 6, 7, 8]
+
+
+def logCsv(mode, landmark_list):
+    if mode == 0:
+        pass
+    if mode == 1:
+        print("LAKSJDLAJSD")
+        csv_path = 'model/keypoint_ours.csv'
+        with open(csv_path, 'a', newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(landmark_list)
+    return
 
 
 def load_labels(path):
@@ -42,6 +59,8 @@ def calc_landmark_list(image, landmarks):
         return n / max_value
 
     temp_landmark_list = list(map(normalize_, temp_landmark_list))
+    temp_landmark_list = [temp_landmark_list[i] for i in meaningful_points]
+    print(temp_landmark_list)
 
     return temp_landmark_list
 
@@ -54,8 +73,15 @@ if __name__ == '__main__':
     print(labels)
 
     cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # Set the resolution
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
+    frame_rate = 5  # Set the frame rate
+    prev = 0
+    landmarks = {'label': None, 'confidence': 0, 'landmarks': None}
 
     while cap.isOpened():
+        time_elapsed = time.time() - prev
         ret, frame = cap.read()
         frame = cv2.flip(frame, 1)
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -63,6 +89,7 @@ if __name__ == '__main__':
         classifier = Classifier()
         if result.multi_hand_landmarks:
             for landmark in result.multi_hand_landmarks:
+                mode = 1 if cv2.waitKey(10) & 0xFF == ord('k') else 0
                 landmark_list = calc_landmark_list(frame, landmark)
                 classification_result = classifier(landmark_list)
                 mpDraw.draw_landmarks(frame, landmark, mpHands.HAND_CONNECTIONS)
