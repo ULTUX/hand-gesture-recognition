@@ -10,13 +10,13 @@ from classifier import Classifier
 
 classifier = Classifier()
 
-# meaningful_points = [2, 3, 4, 5, 6, 7, 8]
-meaningful_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                     17, 18, 19, 20]
+meaningful_points = [2, 4, 5, 8, 9, 12, 13, 16, 17, 20]
+# meaningful_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+#                      17, 18, 19, 20]
 new_list = []
 for i in meaningful_points:
-    new_list.append(i*2)
-    new_list.append(i*2+1)
+    new_list.append(i * 2)
+    new_list.append(i * 2 + 1)
 meaningful_points = new_list
 
 
@@ -65,9 +65,10 @@ def calc_landmark_list(image, landmarks):
         return n / max_value
 
     temp_landmark_list = list(map(normalize_, temp_landmark_list))
-    temp_landmark_list = [temp_landmark_list[i] for i in meaningful_points]
+    temp_landmark_list_select = [temp_landmark_list[i] for i in
+                                 meaningful_points]
 
-    return temp_landmark_list
+    return (temp_landmark_list_select, temp_landmark_list)
 
 
 if __name__ == '__main__':
@@ -95,10 +96,10 @@ if __name__ == '__main__':
         if result.multi_hand_landmarks:
             for landmark in result.multi_hand_landmarks:
                 mode = 1 if cv2.waitKey(10) & 0xFF == ord('k') else 0
-                landmark_list = calc_landmark_list(frame, landmark)
+                (landmark_list, to_save) = calc_landmark_list(frame, landmark)
                 classification_result = classifier(landmark_list)
                 mpDraw.draw_landmarks(frame, landmark, mpHands.HAND_CONNECTIONS)
-                logCsv(mode, landmark_list)
+                logCsv(mode, to_save)
                 if classification_result is None:
                     continue
                 confidence, hand_sign_id = classification_result
